@@ -1,0 +1,12 @@
+
+\.target/
+\.idea/
+
+\pom.xml.versionsBackup
+
+*.iml
+target/
+
+node_modules/
+
+package-lock.json
