@@ -52,7 +52,7 @@
 
   <modules>
     <module>core</module>
-    <!--    <module>frontend</module>-->
+    <module>frontend</module>
   </modules>
 
   <dependencyManagement>
