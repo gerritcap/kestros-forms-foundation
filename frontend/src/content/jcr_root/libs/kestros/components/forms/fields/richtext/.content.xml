@@ -20,5 +20,6 @@
   jcr:primaryType="kes:ComponentType"
   sling:resourceSuperType="kestros/components/forms/fields/base"
   jcr:title="Richtext Field"
+  jcr:description="Richtext input. Allows formatted text input which can include lists, font styling, etc."
   componentGroup="Form Fields"
   fontAwesomeIcon="fas fa-font"/>

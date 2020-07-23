@@ -20,5 +20,6 @@
   jcr:primaryType="kes:ComponentType"
   sling:resourceSuperType="kestros/components/forms/fields/base"
   jcr:title="File Upload Field"
+  jcr:description="Field which allows users to upload a file."
   componentGroup="Form Fields"
   fontAwesomeIcon="fas fa-file-upload"/>

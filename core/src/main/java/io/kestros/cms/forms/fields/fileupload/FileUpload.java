@@ -19,12 +19,14 @@
 package io.kestros.cms.forms.fields.fileupload;
 
 import io.kestros.cms.forms.fields.BaseFormField;
+import io.kestros.commons.structuredslingmodels.annotation.KestrosModel;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
 /**
  * File upload field Sling Model.
  */
+@KestrosModel
 @Model(adaptables = Resource.class,
        resourceType = "kestros/components/forms/fields/file-upload")
 public class FileUpload extends BaseFormField {

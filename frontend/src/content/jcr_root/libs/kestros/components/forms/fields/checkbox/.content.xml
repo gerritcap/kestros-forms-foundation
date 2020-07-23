@@ -18,7 +18,8 @@
   -->
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="kes:ComponentType"
-  sling:resourceSuperType="kestros/components/forms/fields/base"
   jcr:title="Checkbox Field"
+  jcr:description="Simple checkbox input field."
+  sling:resourceSuperType="kestros/components/forms/fields/base"
   componentGroup="Form Fields"
   fontAwesomeIcon="fas fa-check-square"/>

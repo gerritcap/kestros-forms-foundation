@@ -19,6 +19,7 @@
 package io.kestros.cms.forms.fields.hidden;
 
 import io.kestros.cms.forms.fields.BaseFormField;
+import io.kestros.commons.structuredslingmodels.annotation.KestrosModel;
 import io.kestros.commons.structuredslingmodels.annotation.KestrosProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -27,6 +28,7 @@ import org.apache.sling.models.annotations.Model;
 /**
  * Hidden form field.
  */
+@KestrosModel
 @Model(adaptables = Resource.class,
        resourceType = "kestros/components/forms/fields/hidden")
 public class HiddenField extends BaseFormField {

@@ -18,7 +18,8 @@
   -->
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="kes:ComponentType"
-  sling:resourceSuperType="kestros/commons/components/kestros-parent"
   jcr:title="Basic Form"
+  jcr:description="Baseline form which contains fields."
+  sling:resourceSuperType="kestros/commons/components/kestros-parent"
   componentGroup="Forms"
   fontAwesomeIcon="fas fa-clipboard-list"/>
