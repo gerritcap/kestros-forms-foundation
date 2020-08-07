@@ -29,6 +29,7 @@ import io.kestros.commons.structuredslingmodels.annotation.KestrosProperty;
 import io.kestros.commons.structuredslingmodels.exceptions.ChildResourceNotFoundException;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
@@ -153,6 +154,21 @@ public class BaseFormField extends BaseComponent {
       LOG.debug(e.getMessage());
     }
     return Collections.emptyList();
+  }
+
+  /**
+   * Value to prepopulate the field with. Overrides any contextual value unless null.
+   *
+   * @return Value to prepopulate the field with.
+   */
+  @Nullable
+  @KestrosProperty(description = "Value to prepopulate the field with. Overrides any contextual "
+                                 + "value.",
+                   configurable = true,
+                   jcrPropertyName = "initialValue",
+                   defaultValue = "null")
+  public String getInitialValue() {
+    return getProperty("initialValue", null);
   }
 
 }
