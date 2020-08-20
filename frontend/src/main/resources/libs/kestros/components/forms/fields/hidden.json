@@ -1,0 +1,8 @@
+{
+  "jcr:primaryType": "kes:ComponentType",
+  "sling:resourceSuperType": "kestros/components/forms/fields/base",
+  "jcr:title": "Hidden Field",
+  "jcr:description": "Hidden input field.",
+  "componentGroup": "Form Fields",
+  "fontAwesomeIcon": "fas fa-eye-slash"
+}

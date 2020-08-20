@@ -1,0 +1,8 @@
+{
+  "jcr:primaryType": "kes:ComponentType",
+  "jcr:title": "Base Form Field",
+  "jcr:description": "Baseline form field.",
+  "componentGroup": "Kestros Form Fields",
+  "sling:resourceSuperType": "kestros/commons/components/kestros-parent",
+  "fontAwesomeIcon": "fas fa-keyboard"
+}
