@@ -1,0 +1,8 @@
+{
+  "jcr:primaryType": "kes:ComponentType",
+  "sling:resourceSuperType": "kestros/components/forms/fields/base",
+  "jcr:title": "Select Area",
+  "jcr:description": "Select input field.",
+  "componentGroup": "Form Fields",
+  "fontAwesomeIcon": "fas fa-list"
+}

@@ -23,6 +23,7 @@ import static io.kestros.commons.structuredslingmodels.utils.SlingModelUtils.get
 
 import io.kestros.cms.forms.fields.BaseFormField;
 import io.kestros.commons.structuredslingmodels.BaseResource;
+import io.kestros.commons.structuredslingmodels.annotation.KestrosModel;
 import io.kestros.commons.structuredslingmodels.annotation.KestrosProperty;
 import io.kestros.commons.structuredslingmodels.exceptions.ChildResourceNotFoundException;
 import java.util.ArrayList;
@@ -37,8 +38,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Basic select field.
  */
+@KestrosModel
 @Model(adaptables = Resource.class,
-       resourceType = "kestros/components/forms/fields/selectfield")
+       resourceType = "kestros/components/forms/fields/select")
 public class SelectField extends BaseFormField {
 
   private static final Logger LOG = LoggerFactory.getLogger(SelectField.class);

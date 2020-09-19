@@ -19,12 +19,14 @@
 package io.kestros.cms.forms.fields.richtext;
 
 import io.kestros.cms.forms.fields.textfield.Textfield;
+import io.kestros.commons.structuredslingmodels.annotation.KestrosModel;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
 /**
  * Richtext field Sling Model.
  */
+@KestrosModel
 @Model(adaptables = Resource.class,
        resourceType = "kestros/components/forms/fields/richtext")
 public class Richtext extends Textfield {

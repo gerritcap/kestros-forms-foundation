@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<!--/*
   ~      Copyright (C) 2020  Kestros, Inc.
   ~
   ~     This program is free software: you can redistribute it and/or modify
@@ -15,11 +14,7 @@
   ~     You should have received a copy of the GNU General Public License
   ~     along with this program.  If not, see <https://www.gnu.org/licenses/>.
   ~
-  -->
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-  jcr:primaryType="kes:ComponentType"
-  sling:resourceSuperType="kestros/components/forms/fields/base"
-  jcr:title="Richtext Field"
-  jcr:description="Richtext input. Allows formatted text input which can include lists, font styling, etc."
-  componentGroup="Form Fields"
-  fontAwesomeIcon="fas fa-font"/>
+  */-->
+<sly data-sly-use.hidden="${'io.kestros.cms.forms.fields.hidden.HiddenField'}"/>
+
+<input type="hidden" name="${hidden.propertyName}" value="${hidden.value}"/>

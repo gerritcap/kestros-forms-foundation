@@ -20,5 +20,6 @@
   jcr:primaryType="kes:ComponentType"
   sling:resourceSuperType="kestros/components/forms/fields/base"
   jcr:title="Text Area"
+  jcr:description="Text area input field."
   componentGroup="Form Fields"
   fontAwesomeIcon="fas fa-font"/>

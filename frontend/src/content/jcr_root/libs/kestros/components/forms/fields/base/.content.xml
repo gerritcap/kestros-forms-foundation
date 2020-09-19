@@ -18,7 +18,8 @@
   -->
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="kes:ComponentType"
-  jcr:title="Base Dialog Field Type"
-  componentGroup=".hidden"
+  jcr:title="Base Form Field"
+  jcr:description="Baseline form field."
+  componentGroup="Kestros Form Fields"
   sling:resourceSuperType="kestros/commons/components/kestros-parent"
   fontAwesomeIcon="fas fa-keyboard"/>
