@@ -20,12 +20,12 @@ package io.kestros.cms.forms;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
+import io.kestros.commons.validation.models.ModelValidatorBundle;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.sling.api.resource.Resource;
@@ -57,55 +57,6 @@ public class BaseFormValidationServiceTest {
   }
 
   @Test
-  public void testGetModel() {
-    resource = context.create().resource("/form", properties);
-    form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
-
-    assertNotNull(validationService.getModel());
-    assertEquals(form, validationService.getModel());
-  }
-
-  @Test
-  public void testRegisterBasicValidators() {
-    resource = context.create().resource("/form", properties);
-    form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
-
-    assertEquals(4, validationService.getBasicValidators().size());
-
-    assertEquals("Has at least one field.",
-        validationService.getBasicValidators().get(0).getMessage());
-    assertEquals(ModelValidationMessageType.ERROR,
-        validationService.getBasicValidators().get(0).getType());
-
-    assertEquals("Has submit path.", validationService.getBasicValidators().get(1).getMessage());
-    assertEquals(ModelValidationMessageType.WARNING,
-        validationService.getBasicValidators().get(1).getType());
-
-    assertEquals("One of the following is true:",
-        validationService.getBasicValidators().get(2).getMessage());
-    assertEquals(ModelValidationMessageType.ERROR,
-        validationService.getBasicValidators().get(2).getType());
-
-    assertEquals("Has default error message.",
-        validationService.getBasicValidators().get(3).getMessage());
-    assertEquals(ModelValidationMessageType.WARNING,
-        validationService.getBasicValidators().get(3).getType());
-  }
-
-  @Test
-  public void testRegisterDetailedValidators() {
-    resource = context.create().resource("/form", properties);
-    form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
-    validationService.registerDetailedValidators();
-
-    assertEquals(0, validationService.getDetailedValidators().size());
-  }
-
-  @Test
   public void testHasFieldsWhenHasChildFields() {
     resource = context.create().resource("/form", properties);
     context.create().resource("/form/field-1", fieldProperties);
@@ -113,19 +64,23 @@ public class BaseFormValidationServiceTest {
     context.create().resource("/form/field-3", fieldProperties);
 
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
+
+    ModelValidator validator = validationService.hasFields();
+    validator.setModel(form);
 
     assertEquals(3, form.getFields().size());
-    assertTrue(validationService.hasFields().isValid());
+    assertTrue(validator.isValidCheck());
   }
 
   @Test
   public void testHasFieldsWhenHasNoFields() {
     resource = context.create().resource("/form", properties);
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
 
-    assertFalse(validationService.hasFields().isValid());
+    ModelValidator validator = validationService.hasFields();
+    validator.setModel(form);
+
+    assertFalse(validator.isValidCheck());
   }
 
   @Test
@@ -134,9 +89,11 @@ public class BaseFormValidationServiceTest {
     resource = context.create().resource("/form", properties);
 
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
 
-    assertTrue(validationService.hasSubmitPath().isValid());
+    ModelValidator validator = validationService.hasSubmitPath();
+    validator.setModel(form);
+
+    assertTrue(validator.isValidCheck());
   }
 
   @Test
@@ -144,22 +101,25 @@ public class BaseFormValidationServiceTest {
     resource = context.create().resource("/form", properties);
 
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
 
-    assertFalse(validationService.hasSubmitPath().isValid());
-    assertEquals("Has submit path.", validationService.hasSubmitPath().getMessage());
-    assertEquals(ModelValidationMessageType.WARNING, validationService.hasSubmitPath().getType());
+    ModelValidator validator = validationService.hasSubmitPath();
+    validator.setModel(form);
+
+    assertFalse(validator.isValidCheck());
+    assertEquals("Has submit path.", validator.getMessage());
+    assertEquals(ModelValidationMessageType.WARNING, validator.getType());
   }
 
   @Test
   public void testIsValidHttpMethod() {
     resource = context.create().resource("/form", properties);
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
 
-    assertEquals(3, validationService.isValidHttpMethod().getValidators().size());
-    assertEquals("Submits using a valid HTTP method.",
-        validationService.isValidHttpMethod().getBundleMessage());
+    ModelValidatorBundle bundle = validationService.isValidHttpMethod();
+    bundle.setModel(form);
+
+    assertEquals(3, bundle.getValidators().size());
+    assertEquals("Submits using a valid HTTP method.", bundle.getMessage());
   }
 
   @Test
@@ -167,16 +127,21 @@ public class BaseFormValidationServiceTest {
     properties.put("method", "POST");
     resource = context.create().resource("/form", properties);
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertTrue(validationService.isValidHttpMethod("POST").isValid());
-    assertEquals("Submits using POST HTTP method.",
-        validationService.isValidHttpMethod("POST").getMessage());
-    assertEquals(ModelValidationMessageType.WARNING,
-        validationService.isValidHttpMethod("POST").getType());
-    assertFalse(validationService.isValidHttpMethod("PUT").isValid());
-    assertFalse(validationService.isValidHttpMethod("DELETE").isValid());
+    ModelValidator bundle = validationService.isValidHttpMethod();
+    bundle.setModel(form);
+    ModelValidator bundlePost = validationService.isValidHttpMethod("POST");
+    bundlePost.setModel(form);
+    ModelValidator bundlePut = validationService.isValidHttpMethod("PUT");
+    bundlePut.setModel(form);
+    ModelValidator bundleDelete = validationService.isValidHttpMethod("DELETE");
+    bundleDelete.setModel(form);
+
+    assertTrue(bundle.isValidCheck());
+    assertEquals("Submits using POST HTTP method.", bundlePost.getMessage());
+    assertEquals(ModelValidationMessageType.WARNING, bundlePost.getType());
+    assertFalse(bundlePut.isValidCheck());
+    assertFalse(bundleDelete.isValidCheck());
   }
 
   @Test
@@ -184,12 +149,17 @@ public class BaseFormValidationServiceTest {
     properties.put("method", "PUT");
     resource = context.create().resource("/form", properties);
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertFalse(validationService.isValidHttpMethod("POST").isValid());
-    assertTrue(validationService.isValidHttpMethod("PUT").isValid());
-    assertFalse(validationService.isValidHttpMethod("DELETE").isValid());
+    ModelValidator bundlePost = validationService.isValidHttpMethod("POST");
+    bundlePost.setModel(form);
+    ModelValidator bundlePut = validationService.isValidHttpMethod("PUT");
+    bundlePut.setModel(form);
+    ModelValidator bundleDelete = validationService.isValidHttpMethod("DELETE");
+    bundleDelete.setModel(form);
+
+    assertFalse(bundlePost.isValidCheck());
+    assertTrue(bundlePut.isValidCheck());
+    assertFalse(bundleDelete.isValidCheck());
   }
 
   @Test
@@ -197,12 +167,17 @@ public class BaseFormValidationServiceTest {
     properties.put("method", "DELETE");
     resource = context.create().resource("/form", properties);
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertFalse(validationService.isValidHttpMethod("POST").isValid());
-    assertFalse(validationService.isValidHttpMethod("PUT").isValid());
-    assertTrue(validationService.isValidHttpMethod("DELETE").isValid());
+    ModelValidator bundlePost = validationService.isValidHttpMethod("POST");
+    bundlePost.setModel(form);
+    ModelValidator bundlePut = validationService.isValidHttpMethod("PUT");
+    bundlePut.setModel(form);
+    ModelValidator bundleDelete = validationService.isValidHttpMethod("DELETE");
+    bundleDelete.setModel(form);
+
+    assertFalse(bundlePost.isValidCheck());
+    assertFalse(bundlePut.isValidCheck());
+    assertTrue(bundleDelete.isValidCheck());
   }
 
   @Test
@@ -210,12 +185,17 @@ public class BaseFormValidationServiceTest {
     properties.put("method", "GET");
     resource = context.create().resource("/form", properties);
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertFalse(validationService.isValidHttpMethod("POST").isValid());
-    assertFalse(validationService.isValidHttpMethod("PUT").isValid());
-    assertFalse(validationService.isValidHttpMethod("DELETE").isValid());
+    ModelValidator bundlePost = validationService.isValidHttpMethod("POST");
+    bundlePost.setModel(form);
+    ModelValidator bundlePut = validationService.isValidHttpMethod("PUT");
+    bundlePut.setModel(form);
+    ModelValidator bundleDelete = validationService.isValidHttpMethod("DELETE");
+    bundleDelete.setModel(form);
+
+    assertFalse(bundlePost.isValidCheck());
+    assertFalse(bundlePut.isValidCheck());
+    assertFalse(bundleDelete.isValidCheck());
   }
 
   @Test
@@ -224,9 +204,11 @@ public class BaseFormValidationServiceTest {
     resource = context.create().resource("/form", properties);
 
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
 
-    assertTrue(validationService.hasDefaultErrorMessage().isValid());
+    ModelValidator validator = validationService.hasDefaultErrorMessage();
+    validator.setModel(form);
+
+    assertTrue(validator.isValidCheck());
   }
 
   @Test
@@ -234,12 +216,12 @@ public class BaseFormValidationServiceTest {
     resource = context.create().resource("/form", properties);
 
     form = resource.adaptTo(BaseForm.class);
-    doReturn(form).when(validationService).getGenericModel();
 
-    assertFalse(validationService.hasDefaultErrorMessage().isValid());
-    assertEquals("Has default error message.",
-        validationService.hasDefaultErrorMessage().getMessage());
-    assertEquals(ModelValidationMessageType.WARNING,
-        validationService.hasDefaultErrorMessage().getType());
+    ModelValidator validator = validationService.hasDefaultErrorMessage();
+    validator.setModel(form);
+
+    assertFalse(validator.isValidCheck());
+    assertEquals("Has default error message.", validator.getMessage());
+    assertEquals(ModelValidationMessageType.WARNING, validator.getType());
   }
 }

@@ -18,42 +18,72 @@
 
 package io.kestros.cms.forms.fields;
 
-import static io.kestros.commons.structuredslingmodels.validation.CommonValidators.getFailedErrorValidators;
-import static io.kestros.commons.structuredslingmodels.validation.CommonValidators.getFailedWarningValidators;
-import static io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType.WARNING;
+import static io.kestros.commons.validation.ModelValidationMessageType.WARNING;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.kestros.cms.forms.validators.BaseFormFieldValidator;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationService;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidator;
+import io.kestros.commons.structuredslingmodels.BaseSlingModel;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
+import io.kestros.commons.validation.models.ModelValidatorBundle;
+import io.kestros.commons.validation.services.ModelValidationService;
+import io.kestros.commons.validation.services.ModelValidatorRegistrationService;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Generic validation service for form fields.
  */
-public class BaseFormFieldValidationService extends ModelValidationService {
+public class BaseFormFieldValidationService implements ModelValidatorRegistrationService {
+
+  @Reference
+  private ModelValidationService modelValidationService;
 
   @Override
-  public BaseFormField getModel() {
-    return (BaseFormField) getGenericModel();
+  public Class<? extends BaseSlingModel> getModelType() {
+    return BaseFormField.class;
   }
 
   @Override
-  public void registerBasicValidators() {
-    addBasicValidator(hasLabel());
+  public List<ModelValidator> getModelValidators() {
+    List<ModelValidator> modelValidators = new ArrayList<>();
+    modelValidators.add(hasLabel());
+    modelValidators.add(allInputValidatorsAreValid());
+    return modelValidators;
   }
 
-  @Override
-  public void registerDetailedValidators() {
-    for (final BaseFormFieldValidator fieldValidator : getModel().getFieldValidators()) {
-      fieldValidator.doDetailedValidation();
-      for (final ModelValidator validator : getFailedErrorValidators(fieldValidator)) {
-        addDetailedValidator(validator);
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+  ModelValidatorBundle allInputValidatorsAreValid() {
+    return new ModelValidatorBundle<BaseFormField>() {
+      @Override
+      public void registerValidators() {
+        for (final BaseFormFieldValidator fieldValidator : getModel().getFieldValidators()) {
+          for (final ModelValidator validator : modelValidationService.getProcessedValidators(
+              fieldValidator)) {
+            addValidator(validator);
+          }
+        }
       }
-      for (final ModelValidator validator : getFailedWarningValidators(fieldValidator)) {
-        addDetailedValidator(validator);
+
+      @Override
+      public boolean isAllMustBeTrue() {
+        return true;
       }
-    }
+
+      @Override
+      public String getMessage() {
+        return "All input validators are valid.";
+      }
+
+      @Override
+      public ModelValidationMessageType getType() {
+        return ModelValidationMessageType.ERROR;
+      }
+    };
+
+
   }
 
   /**
@@ -61,10 +91,11 @@ public class BaseFormFieldValidationService extends ModelValidationService {
    *
    * @return Whether the form field has a label configured.
    */
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public ModelValidator hasLabel() {
-    return new ModelValidator() {
+    return new ModelValidator<BaseFormField>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         return StringUtils.isNotEmpty(getModel().getLabel());
       }
 
@@ -74,9 +105,16 @@ public class BaseFormFieldValidationService extends ModelValidationService {
       }
 
       @Override
+      public String getDetailedMessage() {
+        return "";
+      }
+
+      @Override
       public ModelValidationMessageType getType() {
         return WARNING;
       }
     };
   }
+
+
 }

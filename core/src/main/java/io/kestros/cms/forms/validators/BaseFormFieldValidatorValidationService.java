@@ -18,30 +18,30 @@
 
 package io.kestros.cms.forms.validators;
 
-import static io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType.ERROR;
 
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationService;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidator;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.kestros.commons.structuredslingmodels.BaseSlingModel;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
+import io.kestros.commons.validation.services.ModelValidatorRegistrationService;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Validation service for {@link BaseFormFieldValidator} resources.
  */
-public class BaseFormFieldValidatorValidationService extends ModelValidationService {
+public class BaseFormFieldValidatorValidationService implements ModelValidatorRegistrationService {
+
 
   @Override
-  public BaseFormFieldValidator getModel() {
-    return (BaseFormFieldValidator) getGenericModel();
+  public Class<? extends BaseSlingModel> getModelType() {
+    return BaseFormFieldValidator.class;
   }
 
   @Override
-  public void registerBasicValidators() {
-    addBasicValidator(hasMessage());
-  }
-
-  @Override
-  public void registerDetailedValidators() {
+  public List<ModelValidator> getModelValidators() {
+    return Collections.singletonList(hasMessage());
   }
 
   /**
@@ -49,10 +49,11 @@ public class BaseFormFieldValidatorValidationService extends ModelValidationServ
    *
    * @return Checks whether the validator has an error message configured.
    */
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public ModelValidator hasMessage() {
-    return new ModelValidator() {
+    return new ModelValidator<BaseFormFieldValidator>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         return StringUtils.isNotEmpty(getModel().getMessage());
       }
 
@@ -62,9 +63,15 @@ public class BaseFormFieldValidatorValidationService extends ModelValidationServ
       }
 
       @Override
+      public String getDetailedMessage() {
+        return "";
+      }
+
+      @Override
       public ModelValidationMessageType getType() {
-        return ERROR;
+        return ModelValidationMessageType.ERROR;
       }
     };
   }
+
 }

@@ -28,7 +28,7 @@ import org.apache.sling.models.annotations.Model;
 /**
  * Basic field validator that matches an input value against the specified regex pattern.
  */
-@KestrosModel(validationService = RegexValidatorValidationService.class)
+@KestrosModel
 @Model(adaptables = Resource.class,
        resourceType = "kestros/cms/validators/regex-validator")
 public class RegexValidator extends BaseFormFieldValidator {

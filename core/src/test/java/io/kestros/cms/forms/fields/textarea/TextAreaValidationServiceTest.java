@@ -20,12 +20,11 @@ package io.kestros.cms.forms.fields.textarea;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.sling.api.resource.Resource;
@@ -53,35 +52,17 @@ public class TextAreaValidationServiceTest {
     validationService = spy(new TextAreaValidationService());
   }
 
-  @Test
-  public void testGetModel() {
-    resource = context.create().resource("/field", properties);
-    textArea = resource.adaptTo(TextArea.class);
-    doReturn(textArea).when(validationService).getGenericModel();
-
-    assertNotNull(validationService.getModel());
-    assertEquals(textArea, validationService.getModel());
-  }
-
-  @Test
-  public void testRegisterBasicValidators() {
-    resource = context.create().resource("/field", properties);
-    textArea = resource.adaptTo(TextArea.class);
-    doReturn(textArea).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
-
-    assertEquals(3, validationService.getBasicValidators().size());
-  }
 
   @Test
   public void testIsRowsPositiveNumber() {
     properties.put("rows", 2);
     resource = context.create().resource("/field", properties);
     textArea = resource.adaptTo(TextArea.class);
-    doReturn(textArea).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertTrue(validationService.isRowsPositiveNumber().isValid());
+    ModelValidator validator = validationService.isRowsPositiveNumber();
+    validator.setModel(textArea);
+
+    assertTrue(validator.isValidCheck());
   }
 
   @Test
@@ -89,14 +70,13 @@ public class TextAreaValidationServiceTest {
     properties.put("rows", -2);
     resource = context.create().resource("/field", properties);
     textArea = resource.adaptTo(TextArea.class);
-    doReturn(textArea).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertFalse(validationService.isRowsPositiveNumber().isValid());
-    assertEquals("Configured number of rows is positive.",
-        validationService.isRowsPositiveNumber().getMessage());
-    assertEquals(ModelValidationMessageType.WARNING,
-        validationService.isRowsPositiveNumber().getType());
+    ModelValidator validator = validationService.isRowsPositiveNumber();
+    validator.setModel(textArea);
+
+    assertFalse(validator.isValidCheck());
+    assertEquals("Configured number of rows is positive.", validator.getMessage());
+    assertEquals(ModelValidationMessageType.WARNING, validator.getType());
   }
 
   @Test
@@ -104,10 +84,11 @@ public class TextAreaValidationServiceTest {
     properties.put("rows", 2);
     resource = context.create().resource("/field", properties);
     textArea = resource.adaptTo(TextArea.class);
-    doReturn(textArea).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertTrue(validationService.isRowsPropertyValueIsInteger().isValid());
+    ModelValidator validator = validationService.isRowsPositiveNumber();
+    validator.setModel(textArea);
+
+    assertTrue(validator.isValidCheck());
   }
 
   @Test
@@ -115,10 +96,11 @@ public class TextAreaValidationServiceTest {
     properties.put("rows", "2");
     resource = context.create().resource("/field", properties);
     textArea = resource.adaptTo(TextArea.class);
-    doReturn(textArea).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertTrue(validationService.isRowsPropertyValueIsInteger().isValid());
+    ModelValidator validator = validationService.isRowsPropertyValueIsInteger();
+    validator.setModel(textArea);
+
+    assertTrue(validator.isValidCheck());
   }
 
   @Test
@@ -126,13 +108,12 @@ public class TextAreaValidationServiceTest {
     properties.put("rows", "string value");
     resource = context.create().resource("/field", properties);
     textArea = resource.adaptTo(TextArea.class);
-    doReturn(textArea).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertFalse(validationService.isRowsPropertyValueIsInteger().isValid());
-    assertEquals("Configured number of rows is an integer.",
-        validationService.isRowsPropertyValueIsInteger().getMessage());
-    assertEquals(ModelValidationMessageType.WARNING,
-        validationService.isRowsPropertyValueIsInteger().getType());
+    ModelValidator validator = validationService.isRowsPropertyValueIsInteger();
+    validator.setModel(textArea);
+
+    assertFalse(validator.isValidCheck());
+    assertEquals("Configured number of rows is an integer.", validator.getMessage());
+    assertEquals(ModelValidationMessageType.WARNING, validator.getType());
   }
 }

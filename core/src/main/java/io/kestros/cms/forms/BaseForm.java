@@ -37,7 +37,7 @@ import org.apache.sling.models.factory.ModelFactory;
 /**
  * Baseline Kestros form model.
  */
-@KestrosModel(validationService = BaseFormValidationService.class)
+@KestrosModel
 @Model(adaptables = Resource.class,
        resourceType = "kestros/components/forms/form")
 public class BaseForm extends BaseComponent {
