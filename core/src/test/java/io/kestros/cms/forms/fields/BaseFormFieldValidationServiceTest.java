@@ -20,12 +20,11 @@ package io.kestros.cms.forms.fields;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.sling.api.resource.Resource;
@@ -53,65 +52,26 @@ public class BaseFormFieldValidationServiceTest {
     validationService = spy(new BaseFormFieldValidationService());
   }
 
-  @Test
-  public void testGetModel() {
-    resource = context.create().resource("/field", properties);
-    field = resource.adaptTo(BaseFormField.class);
-    doReturn(field).when(validationService).getGenericModel();
-
-    assertNotNull(validationService.getModel());
-    assertEquals(field, validationService.getModel());
-  }
-
-  @Test
-  public void testRegisterBasicValidators() {
-    resource = context.create().resource("/field", properties);
-    field = resource.adaptTo(BaseFormField.class);
-    doReturn(field).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
-
-    assertEquals(1, validationService.getBasicValidators().size());
-  }
-
-  @Test
-  public void testRegisterDetailedValidatorsWhenFieldHasValidators() {
-    resource = context.create().resource("/field", properties);
-    field = resource.adaptTo(BaseFormField.class);
-    doReturn(field).when(validationService).getGenericModel();
-    validationService.registerDetailedValidators();
-
-    assertEquals(0, validationService.getDetailedValidators().size());
-  }
-
-  @Test
-  public void testRegisterDetailedValidatorsWhenNoFieldValidators() {
-    resource = context.create().resource("/field", properties);
-    field = resource.adaptTo(BaseFormField.class);
-    doReturn(field).when(validationService).getGenericModel();
-    validationService.registerDetailedValidators();
-
-    assertEquals(0, validationService.getDetailedValidators().size());
-  }
 
   @Test
   public void testHasLabel() {
     properties.put("label", "Label");
     resource = context.create().resource("/field", properties);
     field = resource.adaptTo(BaseFormField.class);
-    doReturn(field).when(validationService).getGenericModel();
-    validationService.registerDetailedValidators();
+    ModelValidator validator = validationService.hasLabel();
+    validator.setModel(field);
 
-    assertTrue( validationService.hasLabel().isValid());
+    assertTrue(validator.isValidCheck());
   }
 
   @Test
   public void testHasLabelWhenLabelNotConfigured() {
     resource = context.create().resource("/field", properties);
     field = resource.adaptTo(BaseFormField.class);
-    doReturn(field).when(validationService).getGenericModel();
-    validationService.registerDetailedValidators();
+    ModelValidator validator = validationService.hasLabel();
+    validator.setModel(field);
 
-    assertFalse( validationService.hasLabel().isValid());
+    assertFalse(validationService.hasLabel().isValid());
     assertEquals("Has a configured label.", validationService.hasLabel().getMessage());
     assertEquals(ModelValidationMessageType.WARNING, validationService.hasLabel().getType());
   }

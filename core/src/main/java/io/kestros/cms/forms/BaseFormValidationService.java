@@ -18,49 +18,79 @@
 
 package io.kestros.cms.forms;
 
-import static io.kestros.commons.structuredslingmodels.validation.CommonValidators.getFailedErrorValidators;
-import static io.kestros.commons.structuredslingmodels.validation.CommonValidators.getFailedWarningValidators;
-import static io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType.ERROR;
-import static io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType.WARNING;
 
+import static io.kestros.commons.validation.ModelValidationMessageType.WARNING;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.kestros.cms.forms.fields.BaseFormField;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationService;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidator;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidatorBundle;
+import io.kestros.commons.structuredslingmodels.BaseSlingModel;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
+import io.kestros.commons.validation.models.ModelValidatorBundle;
+import io.kestros.commons.validation.services.ModelValidationService;
+import io.kestros.commons.validation.services.ModelValidatorRegistrationService;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.servlets.HttpConstants;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Generic validation service for Kestros forms.
  */
-public class BaseFormValidationService extends ModelValidationService {
+public class BaseFormValidationService implements ModelValidatorRegistrationService {
+
+  @Reference
+  private ModelValidationService modelValidationService;
 
   @Override
-  public BaseForm getModel() {
-    return (BaseForm) getGenericModel();
+  public Class<? extends BaseSlingModel> getModelType() {
+    return BaseForm.class;
   }
 
   @Override
-  public void registerBasicValidators() {
-    addBasicValidator(hasFields());
-    addBasicValidator(hasSubmitPath());
-    addBasicValidator(isValidHttpMethod());
-    addBasicValidator(hasDefaultErrorMessage());
+  public List<ModelValidator> getModelValidators() {
+    List<ModelValidator> validators = new ArrayList<>();
+    validators.add(hasFields());
+    validators.add(hasSubmitPath());
+    validators.add(isValidHttpMethod());
+    validators.add(hasDefaultErrorMessage());
+    validators.add(allFieldsAreValid());
+    return validators;
   }
 
-  @Override
-  public void registerDetailedValidators() {
-    for (final BaseFormField field : getModel().getFields()) {
-      field.doDetailedValidation();
-      for (final ModelValidator validator : getFailedErrorValidators(field)) {
-        addDetailedValidator(validator);
+  ModelValidatorBundle allFieldsAreValid() {
+    return new ModelValidatorBundle<BaseForm>() {
+      @Override
+      public void registerValidators() {
+        for (final BaseFormField field : getModel().getFields()) {
+
+          for (final ModelValidator validator : modelValidationService.getProcessedValidators(
+              field)) {
+            if (validator.getType().equals(ModelValidationMessageType.ERROR)
+                || validator.getType().equals(WARNING)) {
+              addValidator(validator);
+            }
+          }
+        }
       }
-      for (final ModelValidator validator : getFailedWarningValidators(field)) {
-        addDetailedValidator(validator);
+
+      @Override
+      public boolean isAllMustBeTrue() {
+        return true;
       }
-    }
+
+      @Override
+      public String getMessage() {
+        return "All fields are valid.";
+      }
+
+      @Override
+      public ModelValidationMessageType getType() {
+        return ModelValidationMessageType.ERROR;
+      }
+    };
   }
 
   /**
@@ -69,9 +99,9 @@ public class BaseFormValidationService extends ModelValidationService {
    * @return Whether the form has input fields.
    */
   public ModelValidator hasFields() {
-    return new ModelValidator() {
+    return new ModelValidator<BaseForm>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         return getModel().getFields().size() > 0;
       }
 
@@ -81,8 +111,13 @@ public class BaseFormValidationService extends ModelValidationService {
       }
 
       @Override
+      public String getDetailedMessage() {
+        return "";
+      }
+
+      @Override
       public ModelValidationMessageType getType() {
-        return ERROR;
+        return ModelValidationMessageType.ERROR;
       }
     };
   }
@@ -93,15 +128,20 @@ public class BaseFormValidationService extends ModelValidationService {
    * @return Whether a submit path has been configured on a form.
    */
   public ModelValidator hasSubmitPath() {
-    return new ModelValidator() {
+    return new ModelValidator<BaseForm>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         return StringUtils.isNotEmpty(getModel().getSubmitPath());
       }
 
       @Override
       public String getMessage() {
         return "Has submit path.";
+      }
+
+      @Override
+      public String getDetailedMessage() {
+        return "";
       }
 
       @Override
@@ -117,15 +157,20 @@ public class BaseFormValidationService extends ModelValidationService {
    * @return Whether a default error message has been configured on a form.
    */
   public ModelValidator hasDefaultErrorMessage() {
-    return new ModelValidator() {
+    return new ModelValidator<BaseForm>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         return StringUtils.isNotEmpty(getModel().getDefaultErrorMessage());
       }
 
       @Override
       public String getMessage() {
         return "Has default error message.";
+      }
+
+      @Override
+      public String getDetailedMessage() {
+        return "";
       }
 
       @Override
@@ -141,16 +186,16 @@ public class BaseFormValidationService extends ModelValidationService {
    * @return Whether an HTTP Method has been configured and is valid.
    */
   public ModelValidatorBundle isValidHttpMethod() {
-    return new ModelValidatorBundle() {
+    return new ModelValidatorBundle<BaseForm>() {
       @Override
       public void registerValidators() {
-        addBasicValidator(isValidHttpMethod(HttpConstants.METHOD_POST));
-        addBasicValidator(isValidHttpMethod(HttpConstants.METHOD_PUT));
-        addBasicValidator(isValidHttpMethod(HttpConstants.METHOD_DELETE));
+        addValidator(isValidHttpMethod(HttpConstants.METHOD_POST));
+        addValidator(isValidHttpMethod(HttpConstants.METHOD_PUT));
+        addValidator(isValidHttpMethod(HttpConstants.METHOD_DELETE));
       }
 
       @Override
-      public String getBundleMessage() {
+      public String getMessage() {
         return "Submits using a valid HTTP method.";
       }
 
@@ -159,9 +204,10 @@ public class BaseFormValidationService extends ModelValidationService {
         return false;
       }
 
+
       @Override
       public ModelValidationMessageType getType() {
-        return ERROR;
+        return ModelValidationMessageType.ERROR;
       }
     };
   }
@@ -172,11 +218,12 @@ public class BaseFormValidationService extends ModelValidationService {
    * @param httpMethod HTTP Method to check against.
    * @return Whether the method property value matches to a specified HTTP Method.
    */
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public ModelValidator isValidHttpMethod(@Nonnull String httpMethod) {
 
-    return new ModelValidator() {
+    return new ModelValidator<BaseForm>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         return getModel().getMethod().equals(httpMethod);
       }
 
@@ -186,9 +233,16 @@ public class BaseFormValidationService extends ModelValidationService {
       }
 
       @Override
+      public String getDetailedMessage() {
+        return "";
+      }
+
+      @Override
       public ModelValidationMessageType getType() {
         return WARNING;
       }
     };
   }
+
+
 }

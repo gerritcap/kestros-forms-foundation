@@ -18,11 +18,14 @@
 
 package io.kestros.cms.forms.validators.regexvalidator;
 
-import static io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType.ERROR;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.kestros.cms.forms.validators.BaseFormFieldValidatorValidationService;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidator;
+import io.kestros.commons.structuredslingmodels.BaseSlingModel;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -30,15 +33,18 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class RegexValidatorValidationService extends BaseFormFieldValidatorValidationService {
 
+
   @Override
-  public RegexValidator getModel() {
-    return (RegexValidator) getGenericModel();
+  public Class<? extends BaseSlingModel> getModelType() {
+    return RegexValidator.class;
   }
 
   @Override
-  public void registerBasicValidators() {
-    super.registerBasicValidators();
-    addBasicValidator(hasPattern());
+  public List<ModelValidator> getModelValidators() {
+    List<ModelValidator> modelValidators = new ArrayList<>();
+    modelValidators.addAll(super.getModelValidators());
+    modelValidators.add(hasPattern());
+    return modelValidators;
   }
 
   /**
@@ -46,10 +52,11 @@ public class RegexValidatorValidationService extends BaseFormFieldValidatorValid
    *
    * @return Whether the regex validator has a pattern configured.
    */
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public ModelValidator hasPattern() {
-    return new ModelValidator() {
+    return new ModelValidator<RegexValidator>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         return StringUtils.isNotEmpty(getModel().getPattern());
       }
 
@@ -59,8 +66,13 @@ public class RegexValidatorValidationService extends BaseFormFieldValidatorValid
       }
 
       @Override
+      public String getDetailedMessage() {
+        return "";
+      }
+
+      @Override
       public ModelValidationMessageType getType() {
-        return ERROR;
+        return ModelValidationMessageType.ERROR;
       }
     };
   }

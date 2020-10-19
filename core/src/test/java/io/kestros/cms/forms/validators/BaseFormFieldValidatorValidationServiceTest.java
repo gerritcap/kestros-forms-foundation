@@ -26,7 +26,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import io.kestros.cms.forms.validators.regexvalidator.RegexValidator;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.sling.api.resource.Resource;
@@ -54,15 +53,7 @@ public class BaseFormFieldValidatorValidationServiceTest {
     validationService = spy(new BaseFormFieldValidatorValidationService());
   }
 
-  @Test
-  public void testGetModel() {
-    resource = context.create().resource("/validator", properties);
-    fieldValidator = resource.adaptTo(RegexValidator.class);
-    doReturn(fieldValidator).when(validationService).getGenericModel();
 
-    assertNotNull(validationService.getModel());
-    assertEquals(fieldValidator, validationService.getModel());
-  }
 //
 //  @Test
 //  public void testRegisterBasicValidators() {

@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
  * Abstract form field validator. Used for validating field input on the frontend (handled by JS)
  * and backend.
  */
-@KestrosModel(validationService = BaseFormFieldValidatorValidationService.class)
+@KestrosModel
 public abstract class BaseFormFieldValidator extends BaseResource {
 
   /**

@@ -27,7 +27,7 @@ import org.apache.sling.models.annotations.Model;
 /**
  * TextArea form field model.
  */
-@KestrosModel(validationService = TextAreaValidationService.class)
+@KestrosModel
 @Model(adaptables = Resource.class,
        resourceType = "kestros/components/forms/fields/textarea")
 public class TextArea extends Textfield {

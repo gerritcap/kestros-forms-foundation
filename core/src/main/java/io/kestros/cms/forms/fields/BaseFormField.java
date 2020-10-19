@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Baseline field used within {@link io.kestros.cms.forms.BaseForm}.
  */
-@KestrosModel(validationService = BaseFormFieldValidationService.class)
+@KestrosModel
 @Model(adaptables = Resource.class,
        resourceType = "kestros/components/forms/fields/base")
 public class BaseFormField extends BaseComponent {

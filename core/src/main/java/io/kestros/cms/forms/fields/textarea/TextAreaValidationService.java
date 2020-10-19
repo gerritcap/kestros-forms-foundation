@@ -18,11 +18,16 @@
 
 package io.kestros.cms.forms.fields.textarea;
 
-import static io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType.WARNING;
 
+import static io.kestros.commons.validation.ModelValidationMessageType.WARNING;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.kestros.cms.forms.fields.BaseFormFieldValidationService;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
-import io.kestros.commons.structuredslingmodels.validation.ModelValidator;
+import io.kestros.commons.structuredslingmodels.BaseSlingModel;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -31,15 +36,17 @@ import org.apache.commons.lang3.StringUtils;
 public class TextAreaValidationService extends BaseFormFieldValidationService {
 
   @Override
-  public TextArea getModel() {
-    return (TextArea) getGenericModel();
+  public Class<? extends BaseSlingModel> getModelType() {
+    return TextArea.class;
   }
 
   @Override
-  public void registerBasicValidators() {
-    super.registerBasicValidators();
-    addBasicValidator(isRowsPositiveNumber());
-    addBasicValidator(isRowsPropertyValueIsInteger());
+  public List<ModelValidator> getModelValidators() {
+    List<ModelValidator> modelValidators = new ArrayList<>();
+    modelValidators.addAll(super.getModelValidators());
+    modelValidators.add(isRowsPositiveNumber());
+    modelValidators.add(isRowsPropertyValueIsInteger());
+    return modelValidators;
   }
 
   /**
@@ -47,16 +54,22 @@ public class TextAreaValidationService extends BaseFormFieldValidationService {
    *
    * @return Checks whether the configured number of rows is a positive integer.
    */
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public ModelValidator isRowsPositiveNumber() {
-    return new ModelValidator() {
+    return new ModelValidator<TextArea>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         return Integer.parseInt(getModel().getProperty("rows", StringUtils.EMPTY)) > 0;
       }
 
       @Override
       public String getMessage() {
         return "Configured number of rows is positive.";
+      }
+
+      @Override
+      public String getDetailedMessage() {
+        return "";
       }
 
       @Override
@@ -71,10 +84,11 @@ public class TextAreaValidationService extends BaseFormFieldValidationService {
    *
    * @return Checks whether the configured rows property is an integer.
    */
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public ModelValidator isRowsPropertyValueIsInteger() {
-    return new ModelValidator() {
+    return new ModelValidator<TextArea>() {
       @Override
-      public boolean isValid() {
+      public Boolean isValidCheck() {
         try {
           Integer.parseInt(getModel().getProperty("rows", StringUtils.EMPTY));
         } catch (Exception e) {
@@ -86,6 +100,11 @@ public class TextAreaValidationService extends BaseFormFieldValidationService {
       @Override
       public String getMessage() {
         return "Configured number of rows is an integer.";
+      }
+
+      @Override
+      public String getDetailedMessage() {
+        return "";
       }
 
       @Override

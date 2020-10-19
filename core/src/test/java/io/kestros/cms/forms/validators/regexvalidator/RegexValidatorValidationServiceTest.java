@@ -20,12 +20,11 @@ package io.kestros.cms.forms.validators.regexvalidator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-import io.kestros.commons.structuredslingmodels.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.ModelValidator;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.sling.api.resource.Resource;
@@ -53,50 +52,29 @@ public class RegexValidatorValidationServiceTest {
     validationService = spy(new RegexValidatorValidationService());
   }
 
-  @Test
-  public void testGetModel() {
-    resource = context.create().resource("/validator", properties);
-    regexValidator = resource.adaptTo(RegexValidator.class);
-    doReturn(regexValidator).when(validationService).getGenericModel();
-
-    assertNotNull(validationService.getModel());
-    assertEquals(regexValidator, validationService.getModel());
-  }
-
-  @Test
-  public void testRegisterBasicValidators() {
-    resource = context.create().resource("/validator", properties);
-    regexValidator = resource.adaptTo(RegexValidator.class);
-    doReturn(regexValidator).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
-
-    assertEquals(2, validationService.getBasicValidators().size());
-    assertEquals("Has a configured error message.",
-        validationService.getBasicValidators().get(0).getMessage());
-    assertEquals("Has a regex pattern configured.",
-        validationService.getBasicValidators().get(1).getMessage());
-  }
 
   @Test
   public void testHasPattern() {
     properties.put("pattern", "***");
     resource = context.create().resource("/validator", properties);
     regexValidator = resource.adaptTo(RegexValidator.class);
-    doReturn(regexValidator).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
 
-    assertTrue(validationService.hasPattern().isValid());
+    ModelValidator validator = validationService.hasPattern();
+    validator.setModel(regexValidator);
+
+    assertTrue(validator.isValidCheck());
   }
 
   @Test
   public void testHasPatternWhenNoPattern() {
     resource = context.create().resource("/validator", properties);
     regexValidator = resource.adaptTo(RegexValidator.class);
-    doReturn(regexValidator).when(validationService).getGenericModel();
-    validationService.registerBasicValidators();
+
+    ModelValidator validator = validationService.hasPattern();
+    validator.setModel(regexValidator);
 
     assertFalse(validationService.hasPattern().isValid());
-    assertEquals("Has a regex pattern configured.", validationService.hasPattern().getMessage());
-    assertEquals(ModelValidationMessageType.ERROR, validationService.hasPattern().getType());
+    assertEquals("Has a regex pattern configured.", validator.getMessage());
+    assertEquals(ModelValidationMessageType.ERROR, validator.getType());
   }
 }
