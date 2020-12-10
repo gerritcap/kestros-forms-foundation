@@ -85,6 +85,15 @@ public class BaseForm extends BaseComponent {
   }
 
   /**
+   * Generic error message to show if one or more fields fail validation.
+   *
+   * @return Generic error message to show if one or more fields fail validation.
+   */
+  public String getDefaultInvalidMessage() {
+    return getProperty("defaultInvalidMessage", StringUtils.EMPTY);
+  }
+
+  /**
    * All fields within the form, included nested within components.
    *
    * @param <T> extends BaseFormField.
