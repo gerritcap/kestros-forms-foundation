@@ -25,9 +25,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.kestros.cms.forms.fields.BaseFormField;
 import io.kestros.commons.structuredslingmodels.BaseSlingModel;
 import io.kestros.commons.validation.ModelValidationMessageType;
+import io.kestros.commons.validation.models.BaseModelValidationRegistrationService;
 import io.kestros.commons.validation.models.ModelValidator;
 import io.kestros.commons.validation.models.ModelValidatorBundle;
 import io.kestros.commons.validation.services.ModelValidationService;
+import io.kestros.commons.validation.services.ModelValidatorRegistrationHandlerService;
 import io.kestros.commons.validation.services.ModelValidatorRegistrationService;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +37,26 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * Generic validation service for Kestros forms.
  */
-public class BaseFormValidationService implements ModelValidatorRegistrationService {
+public class BaseFormValidationService extends BaseModelValidationRegistrationService
+    implements ModelValidatorRegistrationService {
 
   @Reference
   private ModelValidationService modelValidationService;
+
+  @Reference(cardinality = ReferenceCardinality.OPTIONAL,
+             policyOption = ReferencePolicyOption.GREEDY)
+  private ModelValidatorRegistrationHandlerService modelValidatorRegistrationHandlerService;
+
+  @Override
+  public ModelValidatorRegistrationHandlerService getModelValidatorRegistrationHandlerService() {
+    return modelValidatorRegistrationHandlerService;
+  }
 
   @Override
   public Class<? extends BaseSlingModel> getModelType() {
