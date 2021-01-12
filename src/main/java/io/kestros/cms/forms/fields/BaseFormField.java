@@ -22,7 +22,7 @@ import static io.kestros.commons.structuredslingmodels.utils.SlingModelUtils.get
 import static io.kestros.commons.structuredslingmodels.utils.SlingModelUtils.getChildrenAsClosestTypes;
 
 import io.kestros.cms.forms.validators.BaseFormFieldValidator;
-import io.kestros.cms.foundation.content.BaseComponent;
+import io.kestros.cms.sitebuilding.api.models.BaseComponent;
 import io.kestros.commons.structuredslingmodels.BaseResource;
 import io.kestros.commons.structuredslingmodels.annotation.KestrosModel;
 import io.kestros.commons.structuredslingmodels.annotation.KestrosProperty;
