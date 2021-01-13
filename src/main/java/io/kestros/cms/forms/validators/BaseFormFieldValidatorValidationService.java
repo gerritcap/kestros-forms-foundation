@@ -24,7 +24,6 @@ import io.kestros.commons.validation.ModelValidationMessageType;
 import io.kestros.commons.validation.models.BaseModelValidationRegistrationService;
 import io.kestros.commons.validation.models.ModelValidator;
 import io.kestros.commons.validation.services.ModelValidatorRegistrationHandlerService;
-import io.kestros.commons.validation.services.ModelValidatorRegistrationService;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +34,8 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 /**
  * Validation service for {@link BaseFormFieldValidator} resources.
  */
-public class BaseFormFieldValidatorValidationService extends BaseModelValidationRegistrationService {
+public class BaseFormFieldValidatorValidationService
+    extends BaseModelValidationRegistrationService {
 
   @Reference(cardinality = ReferenceCardinality.OPTIONAL,
              policyOption = ReferencePolicyOption.GREEDY)
