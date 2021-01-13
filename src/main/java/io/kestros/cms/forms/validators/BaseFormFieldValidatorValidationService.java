@@ -35,8 +35,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 /**
  * Validation service for {@link BaseFormFieldValidator} resources.
  */
-public class BaseFormFieldValidatorValidationService extends BaseModelValidationRegistrationService
-    implements ModelValidatorRegistrationService {
+public class BaseFormFieldValidatorValidationService extends BaseModelValidationRegistrationService {
 
   @Reference(cardinality = ReferenceCardinality.OPTIONAL,
              policyOption = ReferencePolicyOption.GREEDY)

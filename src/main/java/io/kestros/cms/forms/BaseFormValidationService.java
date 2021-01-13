@@ -43,8 +43,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 /**
  * Generic validation service for Kestros forms.
  */
-public class BaseFormValidationService extends BaseModelValidationRegistrationService
-    implements ModelValidatorRegistrationService {
+public class BaseFormValidationService extends BaseModelValidationRegistrationService {
 
   @Reference
   private ModelValidationService modelValidationService;

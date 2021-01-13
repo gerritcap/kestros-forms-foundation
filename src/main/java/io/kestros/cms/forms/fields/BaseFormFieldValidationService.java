@@ -40,8 +40,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 /**
  * Generic validation service for form fields.
  */
-public class BaseFormFieldValidationService extends BaseModelValidationRegistrationService
-    implements ModelValidatorRegistrationService {
+public class BaseFormFieldValidationService extends BaseModelValidationRegistrationService {
 
   @Reference
   private ModelValidationService modelValidationService;
