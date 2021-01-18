@@ -30,7 +30,7 @@
 
   <groupId>io.kestros.cms</groupId>
   <artifactId>kestros-forms-foundation</artifactId>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.1.1</version>
 
   <name>Kestros Forms Foundation</name>
   <description>Generic framework for building forms in Kestros.</description>
