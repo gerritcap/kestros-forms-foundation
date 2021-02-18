@@ -18,7 +18,8 @@
 <sly data-sly-use.form="${'io.kestros.cms.forms.BaseForm'}"/>
 
 <form action="${form.submitPath}"
-      method="${form.method}">
+      method="${form.method}"
+      data-submit-path="${form.submitPath}">
   <sly data-sly-list.child="${form.childrenAsBaseComponent}">
     <sly data-sly-resource="${child.path @ resourceType=child.resourceType}"/>
   </sly>
